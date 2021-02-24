@@ -29,12 +29,15 @@ public class UserData {
         Kryogenic.KRYO.writeObject(output, this);
 
         document.append("bytes", output.getBuffer());
+        output.close();
 
         return document;
     }
 
     public static UserData fromDocument(Document document) {
         Input input = new Input((byte[]) document.get("bytes"));
-        return Kryogenic.KRYO.readObject(input, UserData.class);
+        UserData data = Kryogenic.KRYO.readObject(input, UserData.class);
+        input.close();
+        return data;
     }
 }

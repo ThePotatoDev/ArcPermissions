@@ -28,12 +28,15 @@ public class Rank {
         Kryogenic.KRYO.writeObject(output, this);
 
         document.append("bytes", output.getBuffer());
+        output.close();
 
         return document;
     }
 
     public static Rank fromDocument(Document document) {
         Input input = new Input((byte[]) document.get("bytes"));
-        return Kryogenic.KRYO.readObject(input, Rank.class);
+        Rank rank = Kryogenic.KRYO.readObject(input, Rank.class);
+        input.close();
+        return rank;
     }
 }
