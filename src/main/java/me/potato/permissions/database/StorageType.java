@@ -11,6 +11,8 @@ public interface StorageType {
     Set<Rank> getRanks();
     Set<UserData> getUsers();
     void saveRank(Rank rank);
+    void saveUser(UserData data);
+    void deleteUser(UserData data);
     void deleteRank(Rank rank);
     Optional<Rank> getRank(String name);
 }

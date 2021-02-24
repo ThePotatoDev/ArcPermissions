@@ -14,4 +14,8 @@ public interface Data {
     static Optional<Rank> getRank(String name) {
         return RANKS.stream().filter(rank -> rank.getName().equalsIgnoreCase(name)).findFirst();
     }
+
+    static Rank getDefault() {
+        return RANKS.stream().filter(Rank::isDefaultRank).findFirst().orElse(null);
+    }
 }

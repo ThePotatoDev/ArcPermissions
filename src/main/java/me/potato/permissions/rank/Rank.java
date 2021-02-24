@@ -15,6 +15,8 @@ import org.bson.types.ObjectId;
 public class Rank {
 
     private final String name;
+    private final boolean defaultRank;
+
     private String color = "&f", prefix = "";
     private int hierarchy;
 

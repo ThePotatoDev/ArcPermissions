@@ -4,11 +4,13 @@ import com.google.common.collect.Sets;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
 import me.potato.permissions.Data;
 import me.potato.permissions.database.StorageType;
 import me.potato.permissions.rank.Rank;
 import me.potato.permissions.user.UserData;
 import org.bson.Document;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.Optional;
@@ -44,6 +46,8 @@ public class MongoStorage implements StorageType {
         Data.RANKS.addAll(getRanks());
         // save ranks on shutdown
         Data.DISABLERS.add(() -> Data.RANKS.forEach(this::saveRank));
+
+        Bukkit.getLogger().info("Mongo database has connected successfully.");
     }
 
     public MongoCollection<Document> getRankCollection() {
@@ -79,13 +83,23 @@ public class MongoStorage implements StorageType {
     }
 
     @Override
+    public void saveUser(UserData data) {
+        ForkJoinPool.commonPool().execute(() -> getUserCollection().insertOne(data.toDocument()));
+    }
+
+    @Override
+    public void deleteUser(UserData data) {
+
+    }
+
+    @Override
     public void deleteRank(Rank rank) {
-        ForkJoinPool.commonPool().execute(() -> getRankCollection().deleteOne(new Document("name", rank.getName())));
+        ForkJoinPool.commonPool().execute(() -> getRankCollection().deleteOne(Filters.eq("name", rank.getName())));
     }
 
     @Override
     public Optional<Rank> getRank(String name) {
-        Document document = getRankCollection().find(new Document("name", name)).first();
+        Document document = getRankCollection().find(Filters.eq("name", name)).first();
 
         if (document == null) {
             return Optional.empty();

@@ -17,6 +17,12 @@
         </dependency>
 
         <dependency>
+            <groupId>me.potato</groupId>
+            <artifactId>redis-license</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.esotericsoftware</groupId>
             <artifactId>kryo</artifactId>
             <version>4.0.1</version>
