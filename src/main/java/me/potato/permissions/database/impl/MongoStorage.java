@@ -1,0 +1,96 @@
+package me.potato.permissions.database.impl;
+
+import com.google.common.collect.Sets;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.MongoCredential;
+import com.mongodb.client.*;
+import me.potato.permissions.Data;
+import me.potato.permissions.database.StorageType;
+import me.potato.permissions.rank.Rank;
+import me.potato.permissions.user.UserData;
+import org.bson.Document;
+import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
+
+public class MongoStorage implements StorageType {
+
+    private final MongoClient client;
+    private final String database, rankCollection, userCollection;
+
+    public MongoStorage(FileConfiguration config) {
+        boolean local = config.getBoolean("MONGO.local");
+        this.database = config.getString("MONGO.database");
+        this.rankCollection = config.getString("MONGO.rank-collection");
+        this.userCollection = config.getString("MONGO.user-collection");
+
+        if (local) {
+            this.client = MongoClients.create();
+        } else {
+            String user = config.getString("MONGO.username");
+            String password = config.getString("MONGO.password");
+
+            // building with specified credential data
+            MongoCredential credential = MongoCredential.createCredential(user, database, password.toCharArray());
+
+            this.client = MongoClients.create(MongoClientSettings.builder()
+                    .credential(credential)
+                    .build());
+        }
+
+        // load database objects to local
+        Data.RANKS.addAll(getRanks());
+        // save ranks on shutdown
+        Data.DISABLERS.add(() -> Data.RANKS.forEach(this::saveRank));
+    }
+
+    public MongoCollection<Document> getRankCollection() {
+        return client.getDatabase(database).getCollection(rankCollection);
+    }
+
+    public MongoCollection<Document> getUserCollection() {
+        return client.getDatabase(database).getCollection(userCollection);
+    }
+
+    @Override
+    public Set<Rank> getRanks() {
+        Set<Rank> set = Sets.newHashSet();
+
+        FindIterable<Document> iterable = getRankCollection().find();
+        MongoCursor<Document> cursor = iterable.cursor();
+
+        while (cursor.hasNext()) {
+            set.add(Rank.fromDocument(cursor.next()));
+        }
+
+        return set;
+    }
+
+    @Override
+    public Set<UserData> getUsers() {
+        return null;
+    }
+
+    @Override
+    public void saveRank(Rank rank) {
+        ForkJoinPool.commonPool().execute(() -> getRankCollection().insertOne(rank.toDocument()));
+    }
+
+    @Override
+    public void deleteRank(Rank rank) {
+        ForkJoinPool.commonPool().execute(() -> getRankCollection().deleteOne(new Document("name", rank.getName())));
+    }
+
+    @Override
+    public Optional<Rank> getRank(String name) {
+        Document document = getRankCollection().find(new Document("name", name)).first();
+
+        if (document == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(Rank.fromDocument(document));
+    }
+}

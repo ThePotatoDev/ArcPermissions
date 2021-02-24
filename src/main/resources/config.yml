@@ -1,0 +1,9 @@
+MONGO:
+  local: true
+  port: 27017
+  address: "localhost"
+  username: "root"
+  password: "password"
+  database: "server"
+  rank-collection: "ranks"
+  user-collection: "users"
