@@ -7,14 +7,15 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import me.potato.permissions.Data;
 import me.potato.permissions.database.StorageType;
+import me.potato.permissions.player.UserData;
 import me.potato.permissions.rank.Rank;
-import me.potato.permissions.user.UserData;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ForkJoinPool;
 
 public class MongoStorage implements StorageType {
@@ -74,7 +75,16 @@ public class MongoStorage implements StorageType {
 
     @Override
     public Set<UserData> getUsers() {
-        return null;
+        Set<UserData> set = Sets.newHashSet();
+
+        FindIterable<Document> iterable = getUserCollection().find();
+        MongoCursor<Document> cursor = iterable.cursor();
+
+        while (cursor.hasNext()) {
+            set.add(UserData.fromDocument(cursor.next()));
+        }
+
+        return set;
     }
 
     @Override
@@ -89,12 +99,23 @@ public class MongoStorage implements StorageType {
 
     @Override
     public void deleteUser(UserData data) {
-
+        ForkJoinPool.commonPool().execute(() -> getUserCollection().deleteOne(Filters.eq("uuid", data.getUuid().toString())));
     }
 
     @Override
     public void deleteRank(Rank rank) {
         ForkJoinPool.commonPool().execute(() -> getRankCollection().deleteOne(Filters.eq("name", rank.getName())));
+    }
+
+    @Override
+    public Optional<UserData> getData(UUID uuid) {
+        Document document = getUserCollection().find(Filters.eq("uuid", uuid.toString())).first();
+
+        if (document == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(UserData.fromDocument(document));
     }
 
     @Override

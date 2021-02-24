@@ -1,10 +1,11 @@
 package me.potato.permissions.database;
 
+import me.potato.permissions.player.UserData;
 import me.potato.permissions.rank.Rank;
-import me.potato.permissions.user.UserData;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 public interface StorageType {
 
@@ -14,5 +15,7 @@ public interface StorageType {
     void saveUser(UserData data);
     void deleteUser(UserData data);
     void deleteRank(Rank rank);
+
+    Optional<UserData> getData(UUID uuid);
     Optional<Rank> getRank(String name);
 }

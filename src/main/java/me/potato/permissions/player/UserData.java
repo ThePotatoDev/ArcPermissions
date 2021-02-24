@@ -1,4 +1,4 @@
-package me.potato.permissions.user;
+package me.potato.permissions.player;
 
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;

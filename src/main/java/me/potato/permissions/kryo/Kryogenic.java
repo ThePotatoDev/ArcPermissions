@@ -4,7 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import me.potato.permissions.kryo.serializer.RankSerializer;
 import me.potato.permissions.kryo.serializer.UserSerializer;
 import me.potato.permissions.rank.Rank;
-import me.potato.permissions.user.UserData;
+import me.potato.permissions.player.UserData;
 
 public interface Kryogenic {
 

@@ -6,7 +6,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import me.potato.permissions.Data;
 import me.potato.permissions.rank.Rank;
-import me.potato.permissions.user.UserData;
+import me.potato.permissions.player.UserData;
 
 import java.util.Arrays;
 import java.util.Optional;
