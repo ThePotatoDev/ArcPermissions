@@ -45,7 +45,7 @@ public class Rank {
     }
 
     public Document toDocument() {
-        Document document = new Document("_id", new ObjectId());
+        Document document = new Document();
         document.append("name", this.name);
 
         Output output = Kryogenic.OUTPUT_POOL.obtain();

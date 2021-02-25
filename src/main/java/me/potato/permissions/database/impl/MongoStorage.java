@@ -5,6 +5,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.ReplaceOptions;
 import me.potato.permissions.Data;
 import me.potato.permissions.database.StorageType;
 import me.potato.permissions.player.profile.UserProfile;
@@ -82,12 +83,12 @@ public class MongoStorage implements StorageType {
 
     @Override
     public void saveRank(Rank rank) {
-        ForkJoinPool.commonPool().execute(() -> rankCollection.insertOne(rank.toDocument()));
+        ForkJoinPool.commonPool().execute(() -> rankCollection.replaceOne(Filters.eq("name", rank.getName()), rank.toDocument(), new ReplaceOptions().upsert(true)));
     }
 
     @Override
     public void saveUser(UserProfile data) {
-        ForkJoinPool.commonPool().execute(() -> userCollection.insertOne(data.toDocument()));
+        ForkJoinPool.commonPool().execute(() -> userCollection.replaceOne(Filters.eq("uuid", data.getUuid().toString()), data.toDocument(), new ReplaceOptions().upsert(true)));
     }
 
     @Override

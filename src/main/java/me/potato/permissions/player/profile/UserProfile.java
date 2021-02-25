@@ -48,7 +48,7 @@ public class UserProfile {
     }
 
     public Document toDocument() {
-        Document document = new Document("_id", new ObjectId());
+        Document document = new Document();
         document.append("uuid", uuid.toString());
 
         Output output = Kryogenic.OUTPUT_POOL.obtain();
