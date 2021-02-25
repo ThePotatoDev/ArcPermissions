@@ -62,8 +62,8 @@ public class UserProfile {
     public static UserProfile fromDocument(Document document) {
         Input input = Kryogenic.INPUT_POOL.obtain();
         input.readBytes((byte[]) document.get("bytes"));
-        UserProfile data = Kryogenic.KRYO.readObject(input, UserProfile.class);
 
+        UserProfile data = Kryogenic.KRYO.readObject(input, UserProfile.class);
         Kryogenic.INPUT_POOL.free(input);
         return data;
     }

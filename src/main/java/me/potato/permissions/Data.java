@@ -19,7 +19,7 @@ public interface Data {
     }
 
     static Optional<Rank> getRank(UUID uuid) {
-        return RANK_MAP.values().stream().filter(rank -> rank.getUUID().equals(uuid)).findFirst();
+        return Optional.ofNullable(RANK_MAP.get(uuid));
     }
 
     static UserProfile getProfile(UUID uuid) {
