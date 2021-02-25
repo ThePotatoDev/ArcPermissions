@@ -21,6 +21,10 @@ public interface Data {
         return RANK_MAP.values().stream().filter(rank -> rank.getName().equalsIgnoreCase(name)).findFirst();
     }
 
+    static Optional<Rank> getRank(UUID uuid) {
+        return RANK_MAP.values().stream().filter(rank -> rank.getUUID().equals(uuid)).findFirst();
+    }
+
     static UserProfile getProfile(UUID uuid) {
         return DATA_MAP.get(uuid);
     }

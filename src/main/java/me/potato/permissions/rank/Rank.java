@@ -44,7 +44,6 @@ public class Rank {
         return super.equals(obj);
     }
 
-
     public Document toDocument() {
         Document document = new Document("_id", new ObjectId());
         document.append("name", this.name);
@@ -63,5 +62,9 @@ public class Rank {
         Rank rank = Kryogenic.KRYO.readObject(input, Rank.class);
         input.close();
         return rank;
+    }
+
+    public UUID getUUID() {
+        return uuid;
     }
 }

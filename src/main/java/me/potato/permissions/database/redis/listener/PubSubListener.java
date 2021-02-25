@@ -15,7 +15,7 @@ public class PubSubListener implements RedisPubSubListener<String, byte[]> {
             Rank rank = Kryogenic.KRYO.readObject(new Input(bytes), Rank.class);
 
             // put the new rank into the rank list
-            Data.RANK_MAP.put(rank.getUuid(), rank);
+            Data.RANK_MAP.put(rank.getUUID(), rank);
 
             // reload player permissions and set the updated object
             Data.getMatched(rank).forEach(profile -> {

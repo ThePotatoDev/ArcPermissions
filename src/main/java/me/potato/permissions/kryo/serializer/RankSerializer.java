@@ -19,9 +19,9 @@ public class RankSerializer extends Serializer<Rank> {
     @Override
     public void write(Kryo kryo, Output output, Rank rank) {
 
-        Arrays.asList(rank.getUuid().toString(), rank.getName(), rank.getColor(), rank.getPrefix(), rank.getPermissions().toString(), rank.getInherited()
+        Arrays.asList(rank.getUUID().toString(), rank.getName(), rank.getColor(), rank.getPrefix(), rank.getPermissions().toString(), rank.getInherited()
                 .stream()
-                .map(Rank::getName)
+                .map(looped -> looped.getUUID().toString())
                 .collect(Collectors.toList())
                 .toString()).forEach(output::writeString);
 
@@ -41,13 +41,15 @@ public class RankSerializer extends Serializer<Rank> {
         rank.setPermissions(permissions);
 
         // loading inherited ranks
-        List<String> rankNames = Arrays.asList(input.readString().split(","));
+        List<String> uuidStrings = Arrays.asList(input.readString().split(","));
         List<Rank> inherited = Lists.newArrayList();
 
-        rankNames.forEach(string -> {
-            Optional<Rank> found = Data.getRank(string);
-            found.ifPresent(inherited::add);
-        });
+        uuidStrings.stream()
+                .map(UUID::fromString)
+                .forEach(uuid -> {
+                    Optional<Rank> found = Data.getRank(uuid);
+                    found.ifPresent(inherited::add);
+                });
 
         rank.setInherited(inherited);
 

@@ -32,13 +32,15 @@ public class UserProfile {
             this.attachment = toPlayer().addAttachment(PermissionPlugin.get());
         }
 
-        // rank permissions
+        // rank & inherited ranks permissions
         rank.getPermissions().forEach(string -> attachment.setPermission(string, true));
+        rank.getInherited().forEach(inherited -> inherited.getPermissions().forEach(string -> attachment.setPermission(string, true)));
     }
 
     // used to reload profile if needed
     public void reloadPerms() {
         attachment.getPermissible().getEffectivePermissions().forEach(info -> attachment.setPermission(info.getPermission(), false));
+        loadPerms();
     }
 
     public Player toPlayer() {
