@@ -5,8 +5,8 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import me.potato.permissions.Data;
-import me.potato.permissions.rank.Rank;
 import me.potato.permissions.player.profile.UserProfile;
+import me.potato.permissions.rank.Rank;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -20,7 +20,7 @@ public class UserSerializer extends Serializer<UserProfile> {
     }
 
     @Override
-    public UserProfile read(Kryo kryo, Input input, Class<UserProfile> type) {
+    public UserProfile read(Kryo kryo, Input input, Class<? extends UserProfile> aClass) {
         UserProfile data = new UserProfile(UUID.fromString(input.readString()));
         data.setName(input.readString());
 

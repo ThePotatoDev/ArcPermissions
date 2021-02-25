@@ -48,19 +48,21 @@ public class Rank {
         Document document = new Document("_id", new ObjectId());
         document.append("name", this.name);
 
-        Output output = new Output();
+        Output output = Kryogenic.OUTPUT_POOL.obtain();
         Kryogenic.KRYO.writeObject(output, this);
 
         document.append("bytes", output.getBuffer());
-        output.close();
+
+        Kryogenic.OUTPUT_POOL.free(output);
 
         return document;
     }
 
     public static Rank fromDocument(Document document) {
-        Input input = new Input((byte[]) document.get("bytes"));
+        Input input = Kryogenic.INPUT_POOL.obtain();
+        input.readBytes((byte[]) document.get("bytes"));
         Rank rank = Kryogenic.KRYO.readObject(input, Rank.class);
-        input.close();
+        Kryogenic.INPUT_POOL.free(input);
         return rank;
     }
 

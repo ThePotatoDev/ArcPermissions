@@ -5,17 +5,14 @@ import com.google.common.collect.Sets;
 import me.potato.permissions.player.profile.UserProfile;
 import me.potato.permissions.rank.Rank;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public interface Data {
 
     Set<Runnable> DISABLERS = Sets.newHashSet();
-    Map<UUID, Rank> RANK_MAP = Maps.newHashMap();
-    Map<UUID, UserProfile> DATA_MAP = Maps.newHashMap();
+    Map<UUID, Rank> RANK_MAP = Collections.synchronizedMap(Maps.newHashMap());
+    Map<UUID, UserProfile> DATA_MAP = Collections.synchronizedMap(Maps.newHashMap());
 
     static Optional<Rank> getRank(String name) {
         return RANK_MAP.values().stream().filter(rank -> rank.getName().equalsIgnoreCase(name)).findFirst();

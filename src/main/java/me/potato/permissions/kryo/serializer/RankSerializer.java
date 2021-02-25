@@ -30,7 +30,7 @@ public class RankSerializer extends Serializer<Rank> {
     }
 
     @Override
-    public Rank read(Kryo kryo, Input input, Class<Rank> type) {
+    public Rank read(Kryo kryo, Input input, Class<? extends Rank> aClass) {
         Rank rank = new Rank(UUID.fromString(input.readString()), input.readString(), input.readBoolean());
 
         rank.setColor(input.readString());
@@ -52,7 +52,6 @@ public class RankSerializer extends Serializer<Rank> {
                 });
 
         rank.setInherited(inherited);
-
         return rank;
     }
 }

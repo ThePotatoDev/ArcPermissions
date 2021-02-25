@@ -47,7 +47,7 @@ public class MongoStorage implements StorageType {
         this.rankCollection = database.getCollection(config.getString("MONGO.rank-collection"));
 
         // load database objects to local
-        getRanks().forEach(rank -> Data.RANK_MAP.put(rank.getUuid(), rank));
+        getRanks().forEach(rank -> Data.RANK_MAP.put(rank.getUUID(), rank));
 
         // save all data on shutdown
         Data.DISABLERS.add(() -> {

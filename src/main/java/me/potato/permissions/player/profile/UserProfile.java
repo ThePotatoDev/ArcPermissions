@@ -51,19 +51,20 @@ public class UserProfile {
         Document document = new Document("_id", new ObjectId());
         document.append("uuid", uuid.toString());
 
-        Output output = new Output();
+        Output output = Kryogenic.OUTPUT_POOL.obtain();
         Kryogenic.KRYO.writeObject(output, this);
-
         document.append("bytes", output.getBuffer());
-        output.close();
+        Kryogenic.OUTPUT_POOL.free(output);
 
         return document;
     }
 
     public static UserProfile fromDocument(Document document) {
-        Input input = new Input((byte[]) document.get("bytes"));
+        Input input = Kryogenic.INPUT_POOL.obtain();
+        input.readBytes((byte[]) document.get("bytes"));
         UserProfile data = Kryogenic.KRYO.readObject(input, UserProfile.class);
-        input.close();
+
+        Kryogenic.INPUT_POOL.free(input);
         return data;
     }
 }
