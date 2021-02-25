@@ -1,21 +1,22 @@
 package me.potato.permissions.database;
 
-import me.potato.permissions.player.UserData;
+import me.potato.permissions.player.profile.UserProfile;
 import me.potato.permissions.rank.Rank;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface StorageType {
 
     Set<Rank> getRanks();
-    Set<UserData> getUsers();
+    Set<UserProfile> getUsers();
     void saveRank(Rank rank);
-    void saveUser(UserData data);
-    void deleteUser(UserData data);
+    void saveUser(UserProfile data);
+    void deleteUser(UserProfile data);
     void deleteRank(Rank rank);
 
-    Optional<UserData> getData(UUID uuid);
-    Optional<Rank> getRank(String name);
+    CompletableFuture<Optional<UserProfile>> getUser(UUID uuid);
+    CompletableFuture<Optional<Rank>> getRank(String name);
 }
