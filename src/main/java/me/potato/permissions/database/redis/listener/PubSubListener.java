@@ -16,7 +16,11 @@ public class PubSubListener implements RedisPubSubListener<String, byte[]> {
     public void message(String channel, byte[] bytes) {
         if (channel.equalsIgnoreCase(Lettuce.RANK_CHANNEL)) {
             // read rank from bytes
-            Rank rank = Kryogenic.KRYO.readObject(new Input(bytes), Rank.class);
+            Input input = Kryogenic.INPUT_POOL.obtain();
+            input.readBytes(bytes);
+
+            Rank rank = Kryogenic.KRYO.readObject(input, Rank.class);
+            Kryogenic.INPUT_POOL.free(input);
 
             // put the new rank into the rank list
             RankUtil.storeRank(rank);

@@ -1,5 +1,6 @@
 package me.potato.permissions;
 
+import me.potato.permissions.command.CommandHandler;
 import me.potato.permissions.database.StorageType;
 import me.potato.permissions.database.impl.MongoStorage;
 import me.potato.permissions.database.redis.Lettuce;
@@ -21,9 +22,11 @@ public class PermissionPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        Lettuce lettuce = new Lettuce();
+        Lettuce lettuce = new Lettuce(getConfig());
         StorageType storage = new MongoStorage(getConfig());
         new PlayerEventHandler(storage).listen();
+
+        new CommandHandler().register(lettuce, storage);
     }
 
     @Override

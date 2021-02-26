@@ -35,6 +35,4 @@ public interface Kryogenic {
             }, -1);
         }
     };
-
-
 }

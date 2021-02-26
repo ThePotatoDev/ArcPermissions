@@ -14,6 +14,7 @@ import me.potato.permissions.kryo.Kryogenic;
 import me.potato.permissions.rank.Rank;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -24,15 +25,10 @@ import java.util.Optional;
 public class Lettuce {
 
     public static final String RANK_CHANNEL = "RANK_CHANNEL";
-
-    private final RedisClient client = RedisClient.create(RedisURI.create("127.0.0.1", 6379));
-
-    private final GenericObjectPool<StatefulRedisConnection<String, String>> pool = ConnectionPoolSupport
-            .createGenericObjectPool(client::connect, new GenericObjectPoolConfig<>());
-
-    private final StatefulRedisPubSubConnection<String, byte[]> connection;
-
     private static final byte[] EMPTY = new byte[0];
+
+    private final GenericObjectPool<StatefulRedisConnection<String, String>> pool;
+    private final StatefulRedisPubSubConnection<String, byte[]> connection;
     private final Charset charset = StandardCharsets.UTF_8;
 
     @SneakyThrows
@@ -42,7 +38,29 @@ public class Lettuce {
         }
     }
 
-    public Lettuce() {
+    public Lettuce(FileConfiguration config) {
+        boolean local = config.getBoolean("REDIS.local");
+        int port = config.getInt("REDIS.port");
+
+        RedisClient client;
+        if (local) {
+            client = RedisClient.create(RedisURI.create("127.0.0.1", port));
+        } else {
+            // building client based on config data
+            String name = config.getString("REDIS.username");
+            String host = config.getString("REDIS.address");
+            String password = config.getString("REDIS.password");
+
+            client = RedisClient.create(RedisURI.builder()
+                    .withClientName(name)
+                    .withPassword(password)
+                    .withHost(host)
+                    .withPort(port)
+                    .build());
+        }
+
+        this.pool = ConnectionPoolSupport.createGenericObjectPool(client::connect, new GenericObjectPoolConfig<>());
+
         this.connection = client.connectPubSub(new RedisCodec<String, byte[]>() {
             @Override
             public String decodeKey(final ByteBuffer bytes) {
@@ -79,8 +97,10 @@ public class Lettuce {
     }
 
     public void publishRank(Rank rank) {
-        Output output = new Output();
-        Kryogenic.KRYO.writeObject(output, this);
+        Output output = Kryogenic.OUTPUT_POOL.obtain();
+        Kryogenic.KRYO.writeObject(output, rank);
+
         connection.async().publish(RANK_CHANNEL, output.getBuffer());
+        Kryogenic.OUTPUT_POOL.free(output);
     }
 }

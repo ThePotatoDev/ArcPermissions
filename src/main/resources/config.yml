@@ -7,3 +7,10 @@ MONGO:
   database: "server"
   rank-collection: "ranks"
   user-collection: "users"
+
+REDIS:
+  local: true
+  port: 3306
+  address: "localhost"
+  username: "root"
+  password: "password"
