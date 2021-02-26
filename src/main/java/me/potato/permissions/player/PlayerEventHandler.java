@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 public class PlayerEventHandler {
@@ -23,23 +24,28 @@ public class PlayerEventHandler {
     public void listen() {
         PermissionPlugin.Events.listen(AsyncPlayerPreLoginEvent.class, event -> {
             UUID uuid = event.getUniqueId();
-
-            UserProfile profile;
+            AtomicReference<UserProfile> reference = new AtomicReference<>();
 
             try {
                 Optional<UserProfile> optional = storage.getUser(uuid).get();
 
                 if (!optional.isPresent()) {
-                    profile = new UserProfile(uuid);
+                    UserProfile profile = new UserProfile(uuid);
                     storage.saveUser(profile);
+                    reference.set(profile);
                 } else {
-                    profile = optional.get();
-                    ProfileUtil.storeProfile(profile);
+                    reference.set(optional.get());
                 }
             } catch (InterruptedException | ExecutionException e) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + "Error loading profile, please relog.");
                 e.printStackTrace();
+                return;
             }
+
+            // if there is no error loading data, continue data initialization
+            UserProfile found = reference.get();
+            found.setName(event.getName());
+            ProfileUtil.storeProfile(found);
         });
 
         PermissionPlugin.Events.listen(PlayerLoginEvent.class, event -> {

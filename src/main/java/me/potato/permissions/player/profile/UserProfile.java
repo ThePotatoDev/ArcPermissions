@@ -50,6 +50,7 @@ public class UserProfile {
     public Document toDocument() {
         Document document = new Document();
         document.append("uuid", uuid.toString());
+        document.append("name", name);
 
         Output output = Kryogenic.OUTPUT_POOL.obtain();
         Kryogenic.KRYO.writeObject(output, this);

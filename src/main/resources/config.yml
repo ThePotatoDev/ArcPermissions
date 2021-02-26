@@ -14,3 +14,6 @@ REDIS:
   address: "localhost"
   username: "root"
   password: "password"
+
+MESSAGES:
+  rank-update: "&7Rank data for rank &a%rank_name% &7has been updated."

@@ -28,7 +28,7 @@ public class PubSubListener implements RedisPubSubListener<String, byte[]> {
             // reload player permissions and set the updated object
             ProfileUtil.getMatched(rank).forEach(profile -> {
                 profile.setRank(rank);
-                profile.loadPerms();
+                profile.reloadPerms();
             });
         }
     }

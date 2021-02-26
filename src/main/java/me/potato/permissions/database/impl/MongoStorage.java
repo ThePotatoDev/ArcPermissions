@@ -78,7 +78,7 @@ public class MongoStorage implements StorageType {
 
     @Override
     public void saveRank(Rank rank) {
-        ForkJoinPool.commonPool().execute(() -> rankCollection.replaceOne(Filters.eq("name", rank.getName()), rank.toDocument(), new ReplaceOptions().upsert(true)));
+        ForkJoinPool.commonPool().execute(() -> rankCollection.replaceOne(Filters.eq("uuid", rank.getUUID().toString()), rank.toDocument(), new ReplaceOptions().upsert(true)));
     }
 
     @Override
