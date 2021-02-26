@@ -8,8 +8,8 @@ import lombok.Setter;
 import me.potato.permissions.PermissionPlugin;
 import me.potato.permissions.kryo.Kryogenic;
 import me.potato.permissions.rank.Rank;
+import me.potato.permissions.rank.RankUtil;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
@@ -24,7 +24,7 @@ public class UserProfile {
     private final UUID uuid;
 
     private String name;
-    private Rank rank;
+    private Rank rank = RankUtil.getDefault();
     private PermissionAttachment attachment;
 
     public void loadPerms() {

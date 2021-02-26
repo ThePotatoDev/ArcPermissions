@@ -10,8 +10,8 @@ import java.util.concurrent.CompletableFuture;
 
 public interface StorageType {
 
-    Set<Rank> getRanks();
-    Set<UserProfile> getUsers();
+    Set<Rank> getAllRanks();
+    Set<UserProfile> getAllUsers();
     void saveRank(Rank rank);
     void saveUser(UserProfile data);
     void deleteUser(UserProfile data);

@@ -6,10 +6,10 @@ import com.mongodb.MongoCredential;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
-import me.potato.permissions.Data;
 import me.potato.permissions.database.StorageType;
 import me.potato.permissions.player.profile.UserProfile;
 import me.potato.permissions.rank.Rank;
+import me.potato.permissions.rank.RankUtil;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -22,15 +22,16 @@ import java.util.concurrent.ForkJoinPool;
 
 public class MongoStorage implements StorageType {
 
-    private final MongoClient client;
     private final MongoCollection<Document> userCollection, rankCollection;
 
     public MongoStorage(FileConfiguration config) {
         boolean local = config.getBoolean("MONGO.local");
         String dbName = config.getString("MONGO.database");
 
+        MongoClient client;
+
         if (local) {
-            this.client = MongoClients.create();
+            client = MongoClients.create();
         } else {
             String user = config.getString("MONGO.username");
             String password = config.getString("MONGO.password");
@@ -38,7 +39,7 @@ public class MongoStorage implements StorageType {
             // building with specified credential data
             MongoCredential credential = MongoCredential.createCredential(user, dbName, password.toCharArray());
 
-            this.client = MongoClients.create(MongoClientSettings.builder()
+            client = MongoClients.create(MongoClientSettings.builder()
                     .credential(credential)
                     .build());
         }
@@ -48,19 +49,13 @@ public class MongoStorage implements StorageType {
         this.rankCollection = database.getCollection(config.getString("MONGO.rank-collection"));
 
         // load database objects to local
-        getRanks().forEach(rank -> Data.RANK_MAP.put(rank.getUUID(), rank));
-
-        // save all data on shutdown
-        Data.DISABLERS.add(() -> {
-            Data.DATA_MAP.values().forEach(this::saveUser);
-            client.close();
-        });
+        getAllRanks().forEach(RankUtil::storeRank);
 
         Bukkit.getLogger().info("Mongo database has connected successfully.");
     }
 
     @Override
-    public Set<Rank> getRanks() {
+    public Set<Rank> getAllRanks() {
         Set<Rank> set = Sets.newHashSet();
         try (MongoCursor<Document> cursor = rankCollection.find().cursor()) {
             while (cursor.hasNext()) {
@@ -71,7 +66,7 @@ public class MongoStorage implements StorageType {
     }
 
     @Override
-    public Set<UserProfile> getUsers() {
+    public Set<UserProfile> getAllUsers() {
         Set<UserProfile> set = Sets.newHashSet();
         try (MongoCursor<Document> cursor = userCollection.find().cursor()) {
             while (cursor.hasNext()) {

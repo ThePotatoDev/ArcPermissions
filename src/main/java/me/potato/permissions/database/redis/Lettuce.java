@@ -41,6 +41,7 @@ public class Lettuce {
             return Optional.of(connection.async());
         }
     }
+
     public Lettuce() {
         this.connection = client.connectPubSub(new RedisCodec<String, byte[]>() {
             @Override

@@ -4,14 +4,16 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import me.potato.permissions.Data;
+import lombok.RequiredArgsConstructor;
 import me.potato.permissions.player.profile.UserProfile;
 import me.potato.permissions.rank.Rank;
+import me.potato.permissions.rank.RankUtil;
 
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class UserSerializer extends Serializer<UserProfile> {
 
     @Override
@@ -25,12 +27,12 @@ public class UserSerializer extends Serializer<UserProfile> {
         data.setName(input.readString());
 
         // get rank from byte data string
-        Optional<Rank> optional = Data.getRank(input.readString());
+        Optional<Rank> optional = RankUtil.getRank(input.readString());
 
         if (optional.isPresent()) {
             data.setRank(optional.get());
         } else {
-            data.setRank(Data.getDefault());
+            data.setRank(RankUtil.getDefault());
         }
 
         return data;

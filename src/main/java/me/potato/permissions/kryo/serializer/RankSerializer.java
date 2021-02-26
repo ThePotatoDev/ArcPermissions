@@ -5,8 +5,9 @@ import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.google.common.collect.Lists;
-import me.potato.permissions.Data;
+import lombok.RequiredArgsConstructor;
 import me.potato.permissions.rank.Rank;
+import me.potato.permissions.rank.RankUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class RankSerializer extends Serializer<Rank> {
 
     @Override
@@ -47,7 +49,7 @@ public class RankSerializer extends Serializer<Rank> {
         uuidStrings.stream()
                 .map(UUID::fromString)
                 .forEach(uuid -> {
-                    Optional<Rank> found = Data.getRank(uuid);
+                    Optional<Rank> found = RankUtil.getRank(uuid);
                     found.ifPresent(inherited::add);
                 });
 

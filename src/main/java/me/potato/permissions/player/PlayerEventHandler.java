@@ -1,9 +1,9 @@
 package me.potato.permissions.player;
 
 import lombok.RequiredArgsConstructor;
-import me.potato.permissions.Data;
 import me.potato.permissions.PermissionPlugin;
 import me.potato.permissions.database.StorageType;
+import me.potato.permissions.player.profile.ProfileUtil;
 import me.potato.permissions.player.profile.UserProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ public class PlayerEventHandler {
                     storage.saveUser(profile);
                 } else {
                     profile = optional.get();
-                    Data.storeProfile(profile);
+                    ProfileUtil.storeProfile(profile);
                 }
             } catch (InterruptedException | ExecutionException e) {
                 event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, ChatColor.RED + "Error loading profile, please relog.");
@@ -44,14 +44,13 @@ public class PlayerEventHandler {
 
         PermissionPlugin.Events.listen(PlayerLoginEvent.class, event -> {
             Player player = event.getPlayer();
-            UserProfile profile = Data.getProfile(player.getUniqueId());
+            UserProfile profile = ProfileUtil.getProfile(player.getUniqueId());
             profile.loadPerms();
         });
 
         PermissionPlugin.Events.listen(PlayerQuitEvent.class, event -> {
             Player player = event.getPlayer();
-            UserProfile profile = Data.getProfile(player.getUniqueId());
-            Data.removeProfile(profile);
+            ProfileUtil.removeProfile(player.getUniqueId());
         });
     }
 }

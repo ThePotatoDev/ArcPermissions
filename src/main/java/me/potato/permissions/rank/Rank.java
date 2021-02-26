@@ -2,16 +2,14 @@ package me.potato.permissions.rank;
 
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.potato.permissions.kryo.Kryogenic;
 import org.bson.Document;
-import org.bson.types.ObjectId;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Getter

@@ -2,25 +2,29 @@ package me.potato.permissions.database.redis.listener;
 
 import com.esotericsoftware.kryo.io.Input;
 import io.lettuce.core.pubsub.RedisPubSubListener;
-import me.potato.permissions.Data;
+import lombok.RequiredArgsConstructor;
 import me.potato.permissions.database.redis.Lettuce;
 import me.potato.permissions.kryo.Kryogenic;
+import me.potato.permissions.player.profile.ProfileUtil;
 import me.potato.permissions.rank.Rank;
+import me.potato.permissions.rank.RankUtil;
 
+@RequiredArgsConstructor
 public class PubSubListener implements RedisPubSubListener<String, byte[]> {
 
     @Override
     public void message(String channel, byte[] bytes) {
         if (channel.equalsIgnoreCase(Lettuce.RANK_CHANNEL)) {
+            // read rank from bytes
             Rank rank = Kryogenic.KRYO.readObject(new Input(bytes), Rank.class);
 
             // put the new rank into the rank list
-            Data.RANK_MAP.put(rank.getUUID(), rank);
+            RankUtil.storeRank(rank);
 
             // reload player permissions and set the updated object
-            Data.getMatched(rank).forEach(profile -> {
+            ProfileUtil.getMatched(rank).forEach(profile -> {
                 profile.setRank(rank);
-                profile.reloadPerms();
+                profile.loadPerms();
             });
         }
     }

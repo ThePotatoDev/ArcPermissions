@@ -28,7 +28,7 @@ public class PermissionPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Data.DISABLERS.forEach(Runnable::run);
+
     }
 
     public static PermissionPlugin get() {
