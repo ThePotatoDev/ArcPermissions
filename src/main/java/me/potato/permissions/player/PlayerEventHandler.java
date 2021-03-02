@@ -2,12 +2,13 @@ package me.potato.permissions.player;
 
 import lombok.RequiredArgsConstructor;
 import me.potato.permissions.PermissionPlugin;
-import me.potato.permissions.database.StorageType;
+import me.potato.permissions.database.Storage;
 import me.potato.permissions.player.profile.ProfileUtil;
 import me.potato.permissions.player.profile.UserProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class PlayerEventHandler {
 
-    private final StorageType storage;
+    private final Storage storage;
 
     public void listen() {
         PermissionPlugin.Events.listen(AsyncPlayerPreLoginEvent.class, event -> {
@@ -48,7 +49,7 @@ public class PlayerEventHandler {
             ProfileUtil.storeProfile(found);
         });
 
-        PermissionPlugin.Events.listen(PlayerLoginEvent.class, event -> {
+        PermissionPlugin.Events.listen(PlayerJoinEvent.class, event -> {
             Player player = event.getPlayer();
             UserProfile profile = ProfileUtil.getProfile(player.getUniqueId());
             profile.loadPerms();

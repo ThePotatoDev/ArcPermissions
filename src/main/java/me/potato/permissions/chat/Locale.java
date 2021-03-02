@@ -7,7 +7,7 @@ import java.text.MessageFormat;
 @RequiredArgsConstructor
 public enum Locale {
 
-    RANK_DATA_UPDATE("&aYour rank data has been updated.");
+    DATA_ALERT_UPDATE("&8[&3Arc&8] &7Rank data for &b{0} &7has been updated.");
 
     private final String data;
 

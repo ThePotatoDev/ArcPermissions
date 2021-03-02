@@ -13,21 +13,21 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class ProfileUtil {
 
-    private final Map<UUID, UserProfile> profileMap = Collections.synchronizedMap(Maps.newHashMap());
+    private final Map<UUID, UserProfile> PROFILE_MAP = Collections.synchronizedMap(Maps.newHashMap());
 
     public UserProfile getProfile(UUID uuid) {
-        return profileMap.get(uuid);
+        return PROFILE_MAP.get(uuid);
     }
 
     public void storeProfile(UserProfile profile) {
-        profileMap.put(profile.getUuid(), profile);
+        PROFILE_MAP.put(profile.getUuid(), profile);
     }
 
     public Set<UserProfile> getMatched(Rank rank) {
-        return profileMap.values().stream().filter(profile -> profile.getRank().equals(rank)).collect(Collectors.toSet());
+        return PROFILE_MAP.values().stream().filter(profile -> profile.getRank().equals(rank)).collect(Collectors.toSet());
     }
 
     public void removeProfile(UUID uuid) {
-        profileMap.remove(uuid);
+        PROFILE_MAP.remove(uuid);
     }
 }

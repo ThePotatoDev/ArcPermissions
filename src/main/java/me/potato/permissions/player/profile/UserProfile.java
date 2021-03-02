@@ -1,12 +1,10 @@
 package me.potato.permissions.player.profile;
 
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import me.potato.permissions.PermissionPlugin;
-import me.potato.permissions.kryo.Kryogenic;
+import me.potato.permissions.chat.ChatUtil;
 import me.potato.permissions.rank.Rank;
 import me.potato.permissions.rank.RankUtil;
 import org.bson.Document;
@@ -14,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -43,29 +42,34 @@ public class UserProfile {
         loadPerms();
     }
 
+    public void sendMessage(String message) {
+        toPlayer().sendMessage(ChatUtil.format(message));
+    }
+
     public Player toPlayer() {
         return Bukkit.getPlayer(uuid);
     }
 
     public Document toDocument() {
-        Document document = new Document();
-        document.append("uuid", uuid.toString());
-        document.append("name", name);
-
-        Output output = Kryogenic.OUTPUT_POOL.obtain();
-        Kryogenic.KRYO.writeObject(output, this);
-        document.append("bytes", output.getBuffer());
-        Kryogenic.OUTPUT_POOL.free(output);
-
-        return document;
+        return new Document()
+                .append("uuid", uuid.toString())
+                .append("name", name)
+                .append("rank", rank.getName());
     }
 
     public static UserProfile fromDocument(Document document) {
-        Input input = Kryogenic.INPUT_POOL.obtain();
-        input.readBytes((byte[]) document.get("bytes"));
+        UUID uuid = UUID.fromString(document.getString("uuid"));
+        String rankName = document.getString("rank");
 
-        UserProfile data = Kryogenic.KRYO.readObject(input, UserProfile.class);
-        Kryogenic.INPUT_POOL.free(input);
-        return data;
+        UserProfile profile = new UserProfile(uuid);
+        Optional<Rank> optional = RankUtil.getRank(rankName);
+
+        if (!optional.isPresent()) {
+            profile.setRank(RankUtil.getDefault());
+        } else {
+            profile.setRank(optional.get());
+        }
+
+        return profile;
     }
 }

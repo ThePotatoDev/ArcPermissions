@@ -1,19 +1,24 @@
 MONGO:
-  local: true
-  port: 27017
-  address: "localhost"
-  username: "root"
-  password: "password"
-  database: "server"
   rank-collection: "ranks"
   user-collection: "users"
+  database: "server"
+  AUTH:
+    enabled: false
+    host: "127.0.0.1"
+    port: 27017
+    username: "root"
+    password: "password"
+  URI:
+    enabled: false
+    data: "uri_here"
 
 REDIS:
-  local: true
-  port: 3306
-  address: "localhost"
-  username: "root"
-  password: "password"
+  AUTH:
+    enabled: false
+    port: 3306
+    address: "127.0.0.1"
+    username: "root"
+    password: "password"
 
 MESSAGES:
   rank-update: "&7Rank data for rank &a%rank_name% &7has been updated."

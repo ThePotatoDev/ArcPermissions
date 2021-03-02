@@ -8,7 +8,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public interface StorageType {
+public interface Storage {
+
+    String DEFAULT_RANK_NAME = "Default";
 
     Set<Rank> getAllRanks();
     Set<UserProfile> getAllUsers();
@@ -18,5 +20,6 @@ public interface StorageType {
     void deleteRank(Rank rank);
 
     CompletableFuture<Optional<UserProfile>> getUser(UUID uuid);
+    CompletableFuture<Optional<UserProfile>> getUser(String name);
     CompletableFuture<Optional<Rank>> getRank(String name);
 }

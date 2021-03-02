@@ -11,21 +11,21 @@ import java.util.UUID;
 @UtilityClass
 public class RankUtil {
 
-    private final Map<UUID, Rank> rankMap = Collections.synchronizedMap(Maps.newHashMap());
+    private final Map<UUID, Rank> RANK_MAP = Collections.synchronizedMap(Maps.newHashMap());
 
     public Rank getDefault() {
-        return rankMap.values().stream().filter(Rank::isDefaultRank).findFirst().orElse(null);
+        return RANK_MAP.values().stream().filter(Rank::isDefaultRank).findFirst().orElse(null);
     }
 
     public Optional<Rank> getRank(UUID uuid) {
-        return Optional.ofNullable(rankMap.get(uuid));
+        return Optional.ofNullable(RANK_MAP.get(uuid));
     }
 
     public Optional<Rank> getRank(String name) {
-        return rankMap.values().stream().filter(rank -> rank.getName().equalsIgnoreCase(name)).findFirst();
+        return RANK_MAP.values().stream().filter(rank -> rank.getName().equalsIgnoreCase(name)).findFirst();
     }
 
     public void storeRank(Rank rank) {
-        rankMap.put(rank.getUUID(), rank);
+        RANK_MAP.put(rank.getUUID(), rank);
     }
 }
